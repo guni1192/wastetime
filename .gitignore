@@ -1,2 +1,4 @@
 oauthkeys.json
 node_modules
+.idea
+Dockerfile
