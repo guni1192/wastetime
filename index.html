@@ -2,21 +2,27 @@
 <html>
 <head>
 
-  <title>Twitter test</title>
+  <title>WasteTime</title>
 
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
-
+  <link href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/cyborg/bootstrap.min.css" rel="stylesheet" integrity="sha384-D9XILkoivXN+bcvB2kSOowkIvIcBbNdoDQvfBNsxYAIieZbx8/SI4NeUvrRGCpDi" crossorigin="anonymous">
+  <link href="./stylesheet.css" rel="stylesheet" type="text/css">
   <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
   <script type="text/javascript" src="/socket.io/socket.io.js"></script>
-
 </head>
 
 <body>
+<header>
+  <div class="tweet-form">
+    <form action="/tweet" method="POST">
+      <input type="text" name="tweet" >
+      <input type="submit" value="tweet">
+    </form>
+  </div>
+</header>
 
-<h1>Pile</h1>
 
 <hr />
 
@@ -37,7 +43,7 @@
 
   function appendMessage(name, text, icon) {
     $("#messageView").prepend(
-      '<a href="#" class="list-group-item list-group-item-action">' +
+      '<a href="" class="list-group-item list-group-item-action">' +
       '<img src="' + icon + '" >' +
       '<strong>' + name + '</strong>' + '<br>' +
       text + '</a>'
