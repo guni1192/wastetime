@@ -8,7 +8,7 @@
   <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <link href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/cyborg/bootstrap.min.css" rel="stylesheet" integrity="sha384-D9XILkoivXN+bcvB2kSOowkIvIcBbNdoDQvfBNsxYAIieZbx8/SI4NeUvrRGCpDi" crossorigin="anonymous">
-  <link href="./stylesheet.css" rel="stylesheet" type="text/css">
+  <link href="stylesheet.css" rel="stylesheet" type="text/css">
   <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
   <script type="text/javascript" src="/socket.io/socket.io.js"></script>
 </head>
@@ -17,8 +17,8 @@
 <header>
   <div class="tweet-form">
     <form action="/tweet" method="POST">
-      <input type="text" name="tweet" >
-      <input type="submit" value="tweet">
+      <input type="text" name="tweet" id="mytweetText">
+      <input type="submit" class="btn btn-primary btn-xs" value="tweet">
     </form>
   </div>
 </header>
@@ -38,15 +38,23 @@
   ioSocket.on("disconnect", function() {});
 
   ioSocket.on("twitter_message", function(data) {
-    appendMessage(data.name, data.text, data.icon)
+    prependMessage(data.name, data.text, data.icon)
   });
 
-  function appendMessage(name, text, icon) {
+  $('form').submit(function(){
+    ioSocket.emit('my_tweet', $('#mytweetText').val());
+    $('#mytweetText').val('');
+    return false;
+  });
+
+  function prependMessage(name, text, icon) {
     $("#messageView").prepend(
       '<a href="" class="list-group-item list-group-item-action">' +
       '<img src="' + icon + '" >' +
       '<strong>' + name + '</strong>' + '<br>' +
-      text + '</a>'
+      text + '<br>' +
+      '<button type="button" class="btn btn-primary btn-xs">favorite</button>' +
+      '<button type="button" class="btn btn-primary btn-xs">retweet</button>' + '</a>'
     );
   }
 

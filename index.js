@@ -17,27 +17,24 @@ var client = new twitter({
 var http_server = new http.createServer(function(req, res) {
   res.writeHead(200, {'Content-Type': 'text/html'});
   res.end(fs.readFileSync('./index.html', 'utf-8'));
-  // tweet処理
-  if(req.url === '/tweet' && req.method === 'POST'){
-    var body = '';
-    req.on('data', function(data){
-      body += data;
-    });
-    req.on('end', function(chunck){
-      var POST = querystring.parse(body);
-      console.log(POST);
-      console.log(POST['tweet'])
-    });
-  }
+
 }).listen(3000);
 
 
 var sio = socket.listen(http_server);
 
-sio.sockets.on('connection', function(socket){});
+sio.sockets.on('connection', function(socket){
+  socket.on('my_tweet', function(msg){
+    client.post('statuses/update', {status: msg}, function(error, msg, response) {
+      if (!error) {
+        console.log(msg);
+      }
+    });
+  });
+});
 
-client.stream('user',
-  function(stream) {
+
+client.stream('user', function(stream) {
 
     stream.on('data', function(tweet) {
       sio.sockets.emit('twitter_message',
@@ -54,4 +51,5 @@ client.stream('user',
     });
   }
 );
+
 
