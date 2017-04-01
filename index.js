@@ -31,19 +31,39 @@ sio.sockets.on('connection', function(socket){
       }
     });
   });
+  socket.on('retweet_request', function(tweet_id){
+    console.log(tweet_id);
+    client.post('statuses/retweet/:id', {id: tweet_id}, function (error, tweet, response) {
+      if (!error) {
+        console.log('Retweeted');
+      }
+      else{
+        console.log(error);
+      }
+    });
+  });
+  socket.on('favorite_request', function(tweet_id){
+    console.log(tweet_id);
+    client.post('favorites/create', {id: tweet_id}, function(error, tweet, response){
+      if(!error){
+        console.log('Favorite success');
+      }
+      else{
+        console.log(error);
+      }
+    })
+  });
 });
 
 
 client.stream('user', function(stream) {
 
     stream.on('data', function(tweet) {
-      sio.sockets.emit('twitter_message',
-        { 'name': tweet.user.name,
-          'text': tweet.text,
-          'icon': tweet.user.profile_image_url
-        });
+      sio.sockets.emit('twitter_message', { 'tweet_status': tweet });
       console.log(tweet.user.name);
-      console.log(tweet.text);
+      console.log(tweet.id);
+      console.log(tweet.id_str);
+      console.log(tweet.text + '\n\n');
     });
 
     stream.on('error', function(error) {

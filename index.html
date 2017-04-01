@@ -15,8 +15,8 @@
 
 <body>
 <header>
-  <div class="tweet-form">
-    <form action="/tweet" method="POST">
+  <div class="tweet-">
+    <form action="" method="POST" id="tweet-form">
       <input type="text" name="tweet" id="mytweetText">
       <input type="submit" class="btn btn-primary btn-xs" value="tweet">
     </form>
@@ -38,23 +38,53 @@
   ioSocket.on("disconnect", function() {});
 
   ioSocket.on("twitter_message", function(data) {
-    prependMessage(data.name, data.text, data.icon)
+    prependMessage(data.tweet_status)
   });
 
-  $('form').submit(function(){
+  $('form#tweet-form').submit(function(){
     ioSocket.emit('my_tweet', $('#mytweetText').val());
     $('#mytweetText').val('');
     return false;
   });
 
-  function prependMessage(name, text, icon) {
+  function retweet(tweet_id){
+    ioSocket.emit('retweet_request', tweet_id);
+  }
+  function favorite(tweet_id){
+    ioSocket.emit('favorite_request', tweet_id);
+  }
+
+  function imageView(tweet_status){
+    var img_tag = '';
+    if('extended_entities' in tweet_status){
+      if('media' in tweet_status.extended_entities){
+        for(var j = 0; j < tweet_status.extended_entities.media.length; j++) {
+          if(tweet_status.extended_entities.media[j].type == "photo"){
+            img_tag += '<img src="' + tweet_status.extended_entities.media[j].media_url + '">'
+          }
+          else if(tweet_status.extended_entities.media[j].type == "video"){
+            return '';
+          }
+        }
+      }
+    }
+    return img_tag;
+  }
+
+  function prependMessage(tweet_status) {
+    var id_str = tweet_status.id_str;
+    var user_name = tweet_status.user.name;
+    var user_id = tweet_status.user.screen_name;
+    var text = tweet_status.text;
+    var user_icon = tweet_status.user.profile_image_url;
+
     $("#messageView").prepend(
       '<a href="" class="list-group-item list-group-item-action">' +
-      '<img src="' + icon + '" >' +
-      '<strong>' + name + '</strong>' + '<br>' +
-      text + '<br>' +
-      '<button type="button" class="btn btn-primary btn-xs">favorite</button>' +
-      '<button type="button" class="btn btn-primary btn-xs">retweet</button>' + '</a>'
+      '<img src="' + user_icon + '" >' +
+      '<strong>' + user_name + '</strong>' + '@'+ user_id +'<br>' +
+      text + '<br>' + imageView(tweet_status) +
+      '<button type="button" class="btn btn-primary btn-xs" onclick="favorite(' + id_str + ')">favorite</button>' +
+      '<button type="button" class="btn btn-primary btn-xs" onclick="retweet(' + id_str + ')">retweet</button>' + '</a>'
     );
   }
 
