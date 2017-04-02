@@ -83,8 +83,6 @@ client.stream('user', function(stream) {
   stream.on('data', function(tweet) {
     sio.sockets.emit('twitter_message', { 'tweet_status': tweet });
     console.log(tweet.user.name);
-    console.log(tweet.id);
-    console.log(tweet.id_str);
     console.log(tweet.text + '\n\n');
   });
 

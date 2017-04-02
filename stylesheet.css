@@ -1,6 +1,62 @@
+body{
+}
 
+.tweet-section{
+    margin: 5px;
+    text-align: center;
+}
 
 .user-photo{
     width: 200px;
     height: 300px;
+}
+
+.mention-buttons{
+    text-align: right;
+}
+
+.btn{
+    margin: 0px 5px 0px 5px;
+}
+
+.content {
+    display: none;
+    margin: 2px;
+}
+
+.row{
+    margin: 0px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    padding: 0px;
+}
+
+.container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    padding: 0px;
+}
+
+.content:target {
+    display: block;
+}
+
+.user-tweet {
+    display: flex;
+}
+
+#messageView{
+    padding:0px;
+}
+
+.tweet-li{
+    margin:1px;
+}
+
+section{
+    margin: 5px;
 }

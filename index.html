@@ -15,26 +15,32 @@
 
 <body>
 <header>
-  <div class="tweet-">
+  <div class="tweet-section">
     <form action="" method="POST" id="tweet-form">
-      <input type="text" name="tweet" id="mytweetText">
+      <textarea cols="40" rows="4" maxlength="140" name="tweet" id="mytweetText"></textarea>
       <input type="submit" class="btn btn-primary btn-xs" value="tweet">
     </form>
   </div>
 </header>
 
 <hr />
+<ul class="nav nav-tabs">
+  <li><a href="#home">Home</a></li>
+  <li><a href="#mention">Mention</a></li>
+</ul>
 
-<div class="container">
+<div class="container content" id="home">
   <div class="row">
-    <ul>
-      <div id="messageView"></div>
-    </ul>
+    <ul id="messageView"></ul>
   </div>
 </div>
+
+  <div id="mention" class="content">Mention here</div>
+
+
 <script type="text/javascript">
 
-  var ioSocket = io.connect("http://localhost:3000");
+  var ioSocket = io.connect("http://192.168.0.103:3000");
 
   ioSocket.on("disconnect", function() {});
 
@@ -43,16 +49,30 @@
   });
 
   $('form#tweet-form').submit(function(){
-    ioSocket.emit('my_tweet', $('#mytweetText').val());
-    $('#mytweetText').val('');
-    return false;
-  });
+    if(window.confirm('Do you RT this tweet?\n\''+ $('#mytweetText') +'\'')){
+      ioSocket.emit('my_tweet', $('#mytweetText').val());
+      $('#mytweetText').val('');
+      return false;
+    }
+    else{
+      window.alert('canceled');
+    }
+ });
 
   function retweet(tweet_id){
-    ioSocket.emit('retweet_request', tweet_id);
+    if(window.confirm('Do you RT this tweet?')){
+      ioSocket.emit('retweet_request', tweet_id);
+    }
+    else{
+      window.alert('canceled');
+    }
   }
   function favorite(tweet_id){
     ioSocket.emit('favorite_request', tweet_id);
+  }
+
+  function reply(reply_id){
+    $('#mytweetText').val('@' + reply_id);
   }
 
   function imageView(tweet_status){
@@ -67,9 +87,10 @@
             return '';
           }
         }
+        img_tag += '<br>'
       }
     }
-    return img_tag + '<br>';
+    return img_tag;
   }
 
   function prependMessage(tweet_status) {
@@ -80,15 +101,20 @@
     var user_icon = tweet_status.user.profile_image_url;
 
     $("#messageView").prepend(
-      '<li class="list-group-item list-group-item-action" id="'+id_str+'">' +
-      '<img src="' + user_icon + '" >' +
-      '<strong>' + user_name + '</strong>' + '@'+ user_id +'<br>' +
-      text + '<br>' + imageView(tweet_status) +
-      '<button class="btn btn-xs btn-primary" onclick="favorite(\'' + id_str + '\')">favorite</button>' +
-      '<button class="btn btn-xs btn-primary" onclick="retweet(\'' + id_str + '\')">retweet</button>' +
-      '<button class="btn btn-xs btn-primary" onclick="retweet(\'' + id_str + '\')">repley to @'+ user_id +'</button>' +
+      '<li class="tweet-li list-group-item list-group-item-action" id="'+id_str+'">' +
+        '<div class="user-tweet">' +
+          '<section class="column-icon"><img src="' + user_icon + '" ></section>' +
+          '<section>' +
+            '<strong><span  style="color: white">' + user_name + '</span></strong>' + '@'+ user_id +'<br>' +
+            '<p><span style="color: white">' + text + '</span></p>' + imageView(tweet_status) +
+          '</section>' +
+        '</div>' +
+        '<div class="mention-buttons">' +
+          '<button class="btn btn-xs btn-primary" onclick="favorite(\'' + id_str + '\')">favorite</button>' +
+          '<button class="btn btn-xs btn-primary" onclick="retweet(\'' + id_str + '\')">retweet</button>' +
+          '<button class="btn btn-xs btn-primary" onclick="reply(\'' + user_id + '\')">reply to @'+ user_id +'</button>' +
+        '</div>' +
       '</li>'
-
     );
   }
 
