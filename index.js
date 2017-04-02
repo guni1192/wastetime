@@ -24,16 +24,16 @@ var http_server = new http.createServer(function(req, res) {
 var sio = socket.listen(http_server);
 
 sio.sockets.on('connection', function(socket){
-  socket.on('my_tweet', function(msg){
-    client.post('statuses/update', {status: msg}, function(error, msg, response) {
+  socket.on('my_tweet', function(tweet_text){
+    client.post('statuses/update', {status: tweet_text}, function(error, msg, response) {
       if (!error) {
-        console.log(msg);
+        console.log(tweet_text);
       }
     });
   });
   socket.on('retweet_request', function(tweet_id){
     console.log(tweet_id);
-    client.post('statuses/retweet/:id', {id: tweet_id}, function (error, tweet, response) {
+    client.post('statuses/retweet/'+tweet_id, {id: tweet_id}, function (error, tweet, response) {
       if (!error) {
         console.log('Retweeted');
       }
@@ -58,18 +58,19 @@ sio.sockets.on('connection', function(socket){
 
 client.stream('user', function(stream) {
 
-    stream.on('data', function(tweet) {
-      sio.sockets.emit('twitter_message', { 'tweet_status': tweet });
-      console.log(tweet.user.name);
-      console.log(tweet.id);
-      console.log(tweet.id_str);
-      console.log(tweet.text + '\n\n');
-    });
+  stream.on('data', function(tweet) {
+    sio.sockets.emit('twitter_message', { 'tweet_status': tweet });
+    console.log(tweet.user.name);
+    console.log(tweet.id);
+    console.log(tweet.id_str);
+    console.log(tweet.text + '\n\n');
+  });
 
-    stream.on('error', function(error) {
-      console.log(error);
-    });
-  }
-);
+  stream.on('error', function(error) {
+    console.log(error);
+  });
+
+});
+
 
 
