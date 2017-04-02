@@ -61,7 +61,7 @@
       if('media' in tweet_status.extended_entities){
         for(var j = 0; j < tweet_status.extended_entities.media.length; j++) {
           if(tweet_status.extended_entities.media[j].type == "photo"){
-            img_tag += '<img src="' + tweet_status.extended_entities.media[j].media_url + '">'
+            img_tag += '<a href="'+ tweet_status.extended_entities.media[j].media_url +'"><img src="' + tweet_status.extended_entities.media[j].media_url + '" class="user-photo"></a>'
           }
           else if(tweet_status.extended_entities.media[j].type == "video"){
             return '';
@@ -84,11 +84,9 @@
       '<img src="' + user_icon + '" >' +
       '<strong>' + user_name + '</strong>' + '@'+ user_id +'<br>' +
       text + '<br>' + imageView(tweet_status) +
-      // '<form action="" method="POST" id="mention-button >" ' +
       '<button class="btn btn-xs btn-primary" onclick="favorite(\'' + id_str + '\')">favorite</button>' +
       '<button class="btn btn-xs btn-primary" onclick="retweet(\'' + id_str + '\')">retweet</button>' +
       '<button class="btn btn-xs btn-primary" onclick="retweet(\'' + id_str + '\')">repley to @'+ user_id +'</button>' +
-      // '</form>' +
       '</li>'
 
     );

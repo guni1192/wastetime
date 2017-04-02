@@ -1,7 +1,13 @@
 var twitter = require('twitter');
 var http = require('http');
 var socket = require('socket.io');
+var path = require('path');
 var fs = require('fs');
+var mimeTypes = {
+  '.js': 'text/javascript',
+  '.html': 'text/html',
+  '.css': 'text/css'
+};
 var querystring = require('querystring');
 
 // OAuth認証
@@ -15,9 +21,25 @@ var client = new twitter({
 
 
 var http_server = new http.createServer(function(req, res) {
-  res.writeHead(200, {'Content-Type': 'text/html'});
-  res.end(fs.readFileSync('./index.html', 'utf-8'));
-
+  var lookup = path.basename(decodeURI(req.url)) || 'index.html',
+  f = './' + lookup;
+  fs.exists(f, function (exists) {
+    if (exists) {
+      fs.readFile(f, function(err, data) {
+        if (err) {
+          res.writeHead(500);
+          res.end('Server Error!');
+          return;
+        }
+        var headers = {'Cpntent-Type' : mimeTypes[path.extname(f)]};
+        res.writeHead(200, headers);
+        res.end(data);
+      });
+      return;
+    }
+    res.writeHead(404);
+    res.end('Nod found.');
+  });
 }).listen(3000);
 
 
