@@ -18,7 +18,7 @@
   <div class="tweet-section">
     <form action="" method="POST" id="tweet-form">
       <textarea cols="40" rows="4" maxlength="140" name="tweet" id="mytweetText"></textarea>
-      <input type="submit" class="btn btn-primary btn-xs" value="tweet">
+      <input type="submit" class="btn btn-primary" value="tweet">
     </form>
   </div>
 </header>
@@ -35,7 +35,7 @@
   </div>
 </div>
 
-  <div id="mention" class="content">Mention here</div>
+<div id="mention" class="content">Mention here</div>
 
 
 <script type="text/javascript">
@@ -49,7 +49,7 @@
   });
 
   $('form#tweet-form').submit(function(){
-    if(window.confirm('Do you RT this tweet?\n\''+ $('#mytweetText') +'\'')){
+    if(window.confirm('Can I tweet this?\n\''+ $('#mytweetText').val() +'\'')){
       ioSocket.emit('my_tweet', $('#mytweetText').val());
       $('#mytweetText').val('');
       return false;
@@ -79,7 +79,7 @@
     var img_tag = '';
     if('extended_entities' in tweet_status){
       if('media' in tweet_status.extended_entities){
-        for(var j = 0; j < tweet_status.extended_entities.media.length; j++) {
+        for(var j = 1; j < tweet_status.extended_entities.media.length; j++) {
           if(tweet_status.extended_entities.media[j].type == "photo"){
             img_tag += '<a href="'+ tweet_status.extended_entities.media[j].media_url +'"><img src="' + tweet_status.extended_entities.media[j].media_url + '" class="user-photo"></a>'
           }
@@ -110,9 +110,9 @@
           '</section>' +
         '</div>' +
         '<div class="mention-buttons">' +
-          '<button class="btn btn-xs btn-primary" onclick="favorite(\'' + id_str + '\')">favorite</button>' +
-          '<button class="btn btn-xs btn-primary" onclick="retweet(\'' + id_str + '\')">retweet</button>' +
-          '<button class="btn btn-xs btn-primary" onclick="reply(\'' + user_id + '\')">reply to @'+ user_id +'</button>' +
+          '<button class="btn btn-xs btn-primary" onclick="favorite(\'' + id_str + '\')"><span class="glyphicon glyphicon-star" aria-hidden="true"></span> Fav</button>' +
+          '<button class="btn btn-xs btn-primary" onclick="retweet(\'' + id_str + '\')"><span class="gyphicon glyphicon glyphicon glyphicon-retweet" aria-hidden="true"></span> RT</button>' +
+          '<button class="btn btn-xs btn-primary" onclick="reply(\'' + user_id + '\')"><span class="gyphicon glyphicon glyphicon-share-alt" aria-hidden="true"></span> reply</button>' +
         '</div>' +
       '</li>'
     );
