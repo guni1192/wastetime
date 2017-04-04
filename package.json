@@ -3,7 +3,6 @@
   "version": "0.0.1",
   "description": "Node.js Twitter Client",
   "dependencies": {
-    "express": "^4.15.2",
     "fs": "0.0.1-security",
     "http": "0.0.0",
     "querystring": "^0.2.0",
