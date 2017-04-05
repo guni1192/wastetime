@@ -52,15 +52,37 @@ function imageView(tweet_status){
   return img_tag;
 }
 
+function isRetweet(tweet_status){
+}
+
 function prependMessage(tweet_status) {
-  let id_str = tweet_status.id_str;
-  let user_name = tweet_status.user.name;
-  let user_id = tweet_status.user.screen_name;
-  let text = tweet_status.text;
-  let user_icon = tweet_status.user.profile_image_url;
+  let id_str;
+  let user_name;
+  let user_id;
+  let text;
+  let user_icon ;
+  let retweet_sentence;
+
+  if('retweeted_status' in tweet_status){
+    id_str = tweet_status.retweeted_status.id_str;
+    user_name = tweet_status.retweeted_status.user.name;
+    user_id = tweet_status.retweeted_status.user.screen_name;
+    text = tweet_status.retweeted_status.text;
+    user_icon = tweet_status.retweeted_status.user.profile_image_url;
+    retweet_sentence = tweet_status.user.name + ' retweeted';
+  }
+  else{
+    id_str = tweet_status.id_str;
+    user_name = tweet_status.user.name;
+    user_id = tweet_status.user.screen_name;
+    text = tweet_status.text;
+    user_icon = tweet_status.user.profile_image_url;
+    retweet_sentence = '';
+  }
 
   $("#messageView").prepend(
     '<li class="tweet-li list-group-item list-group-item-action" id="'+id_str+'">' +
+      '<p>' + retweet_sentence + '</p>'+
       '<div class="user-tweet">' +
         '<section class="column-icon"><img src="' + user_icon + '" ></section>' +
         '<section>' +
@@ -69,9 +91,12 @@ function prependMessage(tweet_status) {
         '</section>' +
       '</div>' +
       '<div class="mention-buttons">' +
-        '<button class="btn btn-xs btn-primary" onclick="favorite(\'' + id_str + '\')"><span class="glyphicon glyphicon-star" aria-hidden="true"></span> Fav</button>' +
-        '<button class="btn btn-xs btn-primary" onclick="retweet(\'' + id_str + '\')"><span class="gyphicon glyphicon glyphicon glyphicon-retweet" aria-hidden="true"></span> RT</button>' +
-        '<button class="btn btn-xs btn-primary" onclick="reply(\'' + user_id + '\')"><span class="gyphicon glyphicon glyphicon-share-alt" aria-hidden="true"></span> reply</button>' +
+        '<button class="btn btn-xs btn-primary" onclick="favorite(\'' +
+          id_str + '\')"><span class="glyphicon glyphicon-star" aria-hidden="true"></span> Fav</button>' +
+        '<button class="btn btn-xs btn-primary" onclick="retweet(\'' +
+          id_str + '\')"><span class="gyphicon glyphicon glyphicon glyphicon-retweet" aria-hidden="true"></span> RT</button>' +
+        '<button class="btn btn-xs btn-primary" onclick="reply(\'' +
+          user_id + '\')"><span class="gyphicon glyphicon glyphicon-share-alt" aria-hidden="true"></span> reply</button>' +
       '</div>' +
     '</li>'
   );

@@ -1,4 +1,4 @@
-'use strict';
+ 'use strict';
 
 let electron = require('electron');
 let app = electron.app;
@@ -12,8 +12,7 @@ app.on('window-all-closed', function() {
 
 app.on('ready', function() {
 
-  // ブラウザ(Chromium)の起動, 初期画面のロード
-  mainWindow = new BrowserWindow({width: 800, height: 600});
+  mainWindow = new BrowserWindow({width: 400, height: 700});
   mainWindow.loadURL('http://' + 'localhost' + ':3000');
 
   mainWindow.on('closed', function() {
@@ -65,7 +64,6 @@ let http_server = new http.createServer(function(req, res) {
   });
 }).listen(3000);
 
-
 let sio = socket.listen(http_server);
 
 sio.sockets.on('connection', function(socket){
@@ -100,20 +98,17 @@ sio.sockets.on('connection', function(socket){
   });
 });
 
-
 client.stream('user', function(stream) {
 
   stream.on('data', function(tweet) {
     sio.sockets.emit('twitter_message', { 'tweet_status': tweet });
-    console.log(tweet.user.name);
-    console.log(tweet.text + '\n\n');
+    // console.log(tweet.user.name);
+    // console.log(tweet.text + '\n\n');
+    console.log(tweet);
   });
 
   stream.on('error', function(error) {
     console.log(error);
   });
-
 });
-
-
 
