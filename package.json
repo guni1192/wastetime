@@ -1,7 +1,7 @@
 {
   "name": "wastetime",
   "version": "0.0.1",
-  "description": "Node.js Twitter Client",
+  "description": " Twitter Client",
   "dependencies": {
     "express": "^4.15.2",
     "fs": "0.0.1-security",
@@ -10,9 +10,7 @@
     "socket.io": "^1.7.3",
     "twitter": "^1.7.0"
   },
-  "scripts": {
-    "start": "node index.js"
-  },
+  "main": "main.js", 
   "devDependencies": {
     "twitter": "^1.7.0"
   }
