@@ -1,10 +1,9 @@
 'use strict';
 
-var electron = require('electron');
-var app = electron.app;
-var BrowserWindow = electron.BrowserWindow;
-
-var mainWindow = null;
+let electron = require('electron');
+let app = electron.app;
+let BrowserWindow = electron.BrowserWindow;
+let mainWindow = null;
 
 app.on('window-all-closed', function() {
   if (process.platform != 'darwin')
@@ -22,30 +21,30 @@ app.on('ready', function() {
   });
 });
 
-var twitter = require('twitter');
-var http = require('http');
-var socket = require('socket.io');
-var path = require('path');
-var fs = require('fs');
-var mimeTypes = {
+let twitter = require('twitter');
+let http = require('http');
+let socket = require('socket.io');
+let path = require('path');
+let fs = require('fs');
+let mimeTypes = {
   '.js': 'text/javascript',
   '.html': 'text/html',
   '.css': 'text/css'
 };
-var querystring = require('querystring');
+let querystring = require('querystring');
 
 
 // OAuth認証
-var keys = JSON.parse(fs.readFileSync('./oauthkeys.json', 'utf8'));
-var client = new twitter({
+let keys = JSON.parse(fs.readFileSync('./oauthkeys.json', 'utf8'));
+let client = new twitter({
     consumer_key        : keys.consumer_key,
     consumer_secret     : keys.consumer_secret,
     access_token_key    : keys.access_token_key,
     access_token_secret : keys.access_token_secret,
 });
 
-var http_server = new http.createServer(function(req, res) {
-  var lookup = path.basename(decodeURI(req.url)) || 'index.html',
+let http_server = new http.createServer(function(req, res) {
+  let lookup = path.basename(decodeURI(req.url)) || 'index.html',
   f = './' + lookup;
   fs.exists(f, function (exists) {
     if (exists) {
@@ -55,7 +54,7 @@ var http_server = new http.createServer(function(req, res) {
           res.end('Server Error!');
           return;
         }
-        var headers = {'Cpntent-Type' : mimeTypes[path.extname(f)]};
+        let headers = {'Cpntent-Type' : mimeTypes[path.extname(f)]};
         res.writeHead(200, headers);
         res.end(data);
       });
@@ -67,7 +66,7 @@ var http_server = new http.createServer(function(req, res) {
 }).listen(3000);
 
 
-var sio = socket.listen(http_server);
+let sio = socket.listen(http_server);
 
 sio.sockets.on('connection', function(socket){
   socket.on('my_tweet', function(tweet_text){
