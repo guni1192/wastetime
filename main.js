@@ -1,4 +1,4 @@
- 'use strict';
+// 'use strict';
 
 let electron = require('electron');
 let app = electron.app;
@@ -11,7 +11,6 @@ app.on('window-all-closed', function() {
 });
 
 app.on('ready', function() {
-
   mainWindow = new BrowserWindow({width: 400, height: 700});
   mainWindow.loadURL('http://' + 'localhost' + ':3000');
 
@@ -31,7 +30,6 @@ let mimeTypes = {
   '.css': 'text/css'
 };
 let querystring = require('querystring');
-
 
 // OAuth認証
 let keys = JSON.parse(fs.readFileSync('./oauthkeys.json', 'utf8'));
@@ -67,8 +65,18 @@ let http_server = new http.createServer(function(req, res) {
 let sio = socket.listen(http_server);
 
 sio.sockets.on('connection', function(socket){
-  socket.on('my_tweet', function(tweet_text){
-    client.post('statuses/update', {status: tweet_text}, function(error, msg, response) {
+  client.get('statuses/home_timeline', {count: 100}, function (error, tweet_list, response){
+    tweet_list.reverse();
+    for(let tweet_status of tweet_list){
+      console.log(tweet_status.user.name);
+      console.log(tweet_status.text);
+    }
+    sio.emit('before_timeline', tweet_list);
+  });
+
+
+  socket.on('my_tweet', function(tweet_text, reply_id){
+    client.post('statuses/update', {status: tweet_text, in_reply_to_status_id: reply_id}, function(error, msg, response) {
       if (!error) {
         console.log(tweet_text);
       }
@@ -102,9 +110,8 @@ client.stream('user', function(stream) {
 
   stream.on('data', function(tweet) {
     sio.sockets.emit('twitter_message', { 'tweet_status': tweet });
-    // console.log(tweet.user.name);
-    // console.log(tweet.text + '\n\n');
-    console.log(tweet);
+    console.log(tweet.user.name);
+    console.log(tweet.text + '\n\n');
   });
 
   stream.on('error', function(error) {

@@ -1,20 +1,23 @@
 let ioSocket = io.connect("http://localhost:3000");
 
+let is_reply;
+
+ioSocket.on("connect", function() {
+  is_reply = false;
+
+});
 ioSocket.on("disconnect", function() {});
 
-ioSocket.on("twitter_message", function(data) {
-  prependMessage(data.tweet_status)
+ioSocket.on('before_timeline', function (status_list) {
+
+  for(let tweet_status of status_list){
+    prependMessage(tweet_status);
+  }
 });
 
-$('form#tweet-form').submit(function(){
-  if(window.confirm('Can I tweet this?\n\''+ $('#mytweetText').val() +'\'')){
-    ioSocket.emit('my_tweet', $('#mytweetText').val());
-    $('#mytweetText').val('');
-    return false;
-  }
-  else{
-    window.alert('canceled');
-  }
+ioSocket.on("twitter_message", function(data) {
+
+  prependMessage(data.tweet_status);
 });
 
 function retweet(tweet_id){
@@ -30,9 +33,6 @@ function favorite(tweet_id){
   ioSocket.emit('favorite_request', tweet_id);
 }
 
-function reply(reply_id){
-  $('#mytweetText').val('@' + reply_id);
-}
 
 function imageView(tweet_status){
   let img_tag = '';
@@ -46,13 +46,10 @@ function imageView(tweet_status){
       else if(media_list.media[j].type === "video"){
         return '';
       }
-      img_tag += '<br>'
     }
+    img_tag += '<br>'
   }
   return img_tag;
-}
-
-function isRetweet(tweet_status){
 }
 
 function prependMessage(tweet_status) {
@@ -96,7 +93,7 @@ function prependMessage(tweet_status) {
         '<button class="btn btn-xs btn-primary" onclick="retweet(\'' +
           id_str + '\')"><span class="gyphicon glyphicon glyphicon glyphicon-retweet" aria-hidden="true"></span> RT</button>' +
         '<button class="btn btn-xs btn-primary" onclick="reply(\'' +
-          user_id + '\')"><span class="gyphicon glyphicon glyphicon-share-alt" aria-hidden="true"></span> reply</button>' +
+          tweet_status + '\')"><span class="gyphicon glyphicon glyphicon-share-alt" aria-hidden="true"></span> reply</button>' +
       '</div>' +
     '</li>'
   );
