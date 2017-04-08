@@ -29,8 +29,6 @@ let mimeTypes = {
   '.html': 'text/html',
   '.css': 'text/css'
 };
-let querystring = require('querystring');
-
 // OAuth認証
 let keys = JSON.parse(fs.readFileSync('./oauthkeys.json', 'utf8'));
 let client = new twitter({
@@ -65,13 +63,25 @@ let http_server = new http.createServer(function(req, res) {
 let sio = socket.listen(http_server);
 
 sio.sockets.on('connection', function(socket){
-  client.get('statuses/home_timeline', {count: 100}, function (error, tweet_list, response){
-    tweet_list.reverse();
-    for(let tweet_status of tweet_list){
-      console.log(tweet_status.user.name);
-      console.log(tweet_status.text);
-    }
-    sio.emit('before_timeline', tweet_list);
+  socket.on('connect_start', function(){
+    client.get('statuses/home_timeline', {count: 100}, function (error, tweet_list, response){
+      for(let tweet_status of tweet_list){
+        console.log(tweet_status.user.name);
+        console.log(tweet_status.text + '\n\n');
+      }
+      tweet_list.reverse();
+      sio.emit('before_timeline', tweet_list);
+    });
+
+    client.get('statuses/mentions_timeline.json', {count: 100}, function (mentions) {
+      for(let mention of mentions){
+        console.log(mention.user.name);
+        console.log(mention.text + '\n\n');
+      }
+ 
+      mentions.reverse();
+      sio.emit('before_mentions', mentions);
+    });
   });
 
 

@@ -4,20 +4,25 @@ let is_reply;
 
 ioSocket.on("connect", function() {
   is_reply = false;
-
+  ioSocket.emit('connect_start');
 });
+
 ioSocket.on("disconnect", function() {});
 
 ioSocket.on('before_timeline', function (status_list) {
-
   for(let tweet_status of status_list){
-    prependMessage(tweet_status);
+    prependMessage(tweet_status, $('#messageView'));
+  }
+});
+
+ioSocket.on("before_mentions", function (mentions) {
+  for(let mention of mentions){
+    prependMessage(mention, $('#mentionView'));
   }
 });
 
 ioSocket.on("twitter_message", function(data) {
-
-  prependMessage(data.tweet_status);
+  prependMessage(data.tweet_status, $('#messageView'));
 });
 
 function retweet(tweet_id){
@@ -52,7 +57,7 @@ function imageView(tweet_status){
   return img_tag;
 }
 
-function prependMessage(tweet_status) {
+function prependMessage(tweet_status, $tab_id) {
   let id_str;
   let user_name;
   let user_id;
@@ -77,7 +82,7 @@ function prependMessage(tweet_status) {
     retweet_sentence = '';
   }
 
-  $("#messageView").prepend(
+  $tab_id.prepend(
     '<li class="tweet-li list-group-item list-group-item-action" id="'+id_str+'">' +
       '<p>' + retweet_sentence + '</p>'+
       '<div class="user-tweet">' +

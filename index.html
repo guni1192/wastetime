@@ -1,9 +1,7 @@
 <!Doctype html>
 <html>
 <head>
-
   <title>WasteTime</title>
-
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
@@ -26,24 +24,32 @@
 </header>
 
 <hr />
-<ul class="nav nav-tabs">
-  <li><a href="#home">Home</a></li>
-  <li><a href="#mention">Mention</a></li>
-</ul>
 
-<div class="container content" id="home">
+<div class="tabbox">
+  <p>
+   <a href="#home">Home</a>
+    <a href="#mention">Mention</a>
+  </p>
+</div>
+
+<div class="tab container" id="home">
   <div class="row">
     <ul id="messageView"></ul>
   </div>
 </div>
 
-<div id="mention" class="content">Mention here</div>
+<div id="mention" class="tab container">
+  <div class="row">
+    Mention here
+    <ul id="mentionView"></ul>
+  </div>
+</div>
 
 
 <script>
   $('form').submit(function(){
     if(window.confirm('Can I tweet this?\n\''+ $('#myTweetText').val() +'\'')){
-      ioSocket.emit('my_tweet', tweettext=$('#myTweetText').val(), reply_id= null);
+      ioSocket.emit('my_tweet', $('#myTweetText').val(), null);
       $('#myTweetText').val('');
       return false;
     }
@@ -52,25 +58,25 @@
     }
    });
 
-function reply(tweet_status, user_id, id_str){
-  if(is_reply){
-    $('#isReplymessage').html('reply to @' + user_id);
-    $('form').submit(function(){
-      if(window.confirm('Can I tweet this?\n\''+ $('#myTweetText').val() +'\'')){
-        ioSocket.emit('my_tweet', tweet_text=$('#myTweetText').val(), reply_id= user_id);
-        $('#myTweetText').val('');
-        is_reply = false;
-        return false;
+  function reply(tweet_status, user_id, id_str){
+    if(is_reply){
+      $('#isReplymessage').html('reply to @' + user_id);
+      $('form').submit(function(){
+        if(window.confirm('Can I tweet this?\n\''+ $('#myTweetText').val() +'\'')){
+          ioSocket.emit('my_tweet', $('#myTweetText').val(), user_id);
+          $('#myTweetText').val('');
+          is_reply = false;
+          return false;
+        }
+        else{
+          window.alert('canceled');
+        }
+      });
     }
     else{
-      window.alert('canceled');
+      $('#isReplymessage').html('No reply');
     }
-   });
   }
-  else{
-    $('#isReplymessage').html('No reply');
-  }
-}
 
 </script>
 </body>
