@@ -65,21 +65,17 @@ let sio = socket.listen(http_server);
 sio.sockets.on('connection', function(socket){
   socket.on('connect_start', function(){
     client.get('statuses/home_timeline', {count: 100}, function (error, tweet_list, response){
-      for(let tweet_status of tweet_list){
-        console.log(tweet_status.user.name);
-        console.log(tweet_status.text + '\n\n');
-      }
+      // for(let tweet_status of tweet_list){
+      //   console.log(tweet_status.user.name);
+      //   console.log(tweet_status.text + '\n\n');
+      // }
       tweet_list.reverse();
       sio.emit('before_timeline', tweet_list);
     });
 
-    client.get('statuses/mentions_timeline.json', {count: 100}, function (mentions) {
-      for(let mention of mentions){
-        console.log(mention.user.name);
-        console.log(mention.text + '\n\n');
-      }
- 
-      mentions.reverse();
+    client.get('/statuses/mentions_timeline.json', {}, function (error, mentions, response) {
+      // console.log(mentions);
+      // mentions.reverse();
       sio.emit('before_mentions', mentions);
     });
   });
