@@ -75,7 +75,7 @@ sio.sockets.on('connection', function(socket){
 
     client.get('/statuses/mentions_timeline.json', {}, function (error, mentions, response) {
       // console.log(mentions);
-      // mentions.reverse();
+      mentions.reverse();
       sio.emit('before_mentions', mentions);
     });
   });
@@ -116,8 +116,13 @@ client.stream('user', function(stream) {
 
   stream.on('data', function(tweet) {
     sio.sockets.emit('twitter_message', { 'tweet_status': tweet });
-    console.log(tweet.user.name);
-    console.log(tweet.text + '\n\n');
+    if('in_reply_screen_name' in tweet && tweet.in_reply_screen_name === "guni1192"){
+      sio.sockets.emit('mention_come', {'tweet_status': tweet});
+      console.log(tweet.user.name);
+      console.log(tweet.text);
+    }
+    // console.log(tweet.user.name);
+    // console.log(tweet.text + '\n\n');
   });
 
   stream.on('error', function(error) {

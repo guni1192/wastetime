@@ -21,6 +21,10 @@ ioSocket.on("before_mentions", function (mentions) {
   }
 });
 
+ioSocket.on("mention_come", function (mention) {
+  prependMessage(mention, $('#mentionView'));
+});
+
 ioSocket.on("twitter_message", function(data) {
   prependMessage(data.tweet_status, $('#messageView'));
 });
