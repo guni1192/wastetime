@@ -1,6 +1,6 @@
-// 'use strict';
+'use strict';
 
-let electron = require('electron');
+const electron = require('electron');
 let app = electron.app;
 let BrowserWindow = electron.BrowserWindow;
 let mainWindow = null;
@@ -11,17 +11,17 @@ app.on('window-all-closed', function() {
 });
 
 app.on('ready', function() {
-  mainWindow = new BrowserWindow({width: 400, height: 700});
-  mainWindow.loadURL('http://' + 'localhost' + ':3000');
+    mainWindow = new BrowserWindow({width: 400, height: 700});
+    mainWindow.loadURL('http://' + 'localhost' + ':3000');
 
-  mainWindow.on('closed', function() {
+    mainWindow.on('closed', function() {
     mainWindow = null;
   });
 });
 
-let twitter = require('twitter');
+const twitter = require('twitter');
 let http = require('http');
-let socket = require('socket.io');
+const socket = require('socket.io');
 let path = require('path');
 let fs = require('fs');
 let mimeTypes = {
@@ -30,7 +30,7 @@ let mimeTypes = {
   '.css': 'text/css'
 };
 // OAuth認証
-let keys = JSON.parse(fs.readFileSync('./oauthkeys.json', 'utf8'));
+const keys = JSON.parse(fs.readFileSync('./oauthkeys.json', 'utf8'));
 let client = new twitter({
     consumer_key        : keys.consumer_key,
     consumer_secret     : keys.consumer_secret,
@@ -64,22 +64,17 @@ let sio = socket.listen(http_server);
 
 sio.sockets.on('connection', function(socket){
   socket.on('connect_start', function(){
+    // 起動する前のタイムラインの取得
     client.get('statuses/home_timeline', {count: 100}, function (error, tweet_list, response){
-      // for(let tweet_status of tweet_list){
-      //   console.log(tweet_status.user.name);
-      //   console.log(tweet_status.text + '\n\n');
-      // }
       tweet_list.reverse();
       sio.emit('before_timeline', tweet_list);
     });
-
+    // 起動する前のMentionを取得する
     client.get('/statuses/mentions_timeline.json', {}, function (error, mentions, response) {
-      // console.log(mentions);
       mentions.reverse();
       sio.emit('before_mentions', mentions);
     });
   });
-
 
   socket.on('my_tweet', function(tweet_text, reply_id){
     client.post('statuses/update', {status: tweet_text, in_reply_to_status_id: reply_id}, function(error, msg, response) {
@@ -88,6 +83,7 @@ sio.sockets.on('connection', function(socket){
       }
     });
   });
+  // Retweetボタンを押したときの処理
   socket.on('retweet_request', function(tweet_id){
     console.log(tweet_id);
     client.post('statuses/retweet/'+tweet_id, {id: tweet_id}, function (error, tweet, response) {
@@ -99,6 +95,7 @@ sio.sockets.on('connection', function(socket){
       }
     });
   });
+  // Favoriteボタンを押したときの処理
   socket.on('favorite_request', function(tweet_id){
     console.log(tweet_id);
     client.post('favorites/create', {id: tweet_id}, function(error, tweet, response){
@@ -108,23 +105,20 @@ sio.sockets.on('connection', function(socket){
       else{
         console.log(error);
       }
-    })
+    });
   });
 });
 
+// Userstreamの処理
 client.stream('user', function(stream) {
 
   stream.on('data', function(tweet) {
+    console.log(tweet);
     sio.sockets.emit('twitter_message', { 'tweet_status': tweet });
     if('in_reply_screen_name' in tweet && tweet.in_reply_screen_name === "guni1192"){
       sio.sockets.emit('mention_come', {'tweet_status': tweet});
-      console.log(tweet.user.name);
-      console.log(tweet.text);
     }
-    // console.log(tweet.user.name);
-    // console.log(tweet.text + '\n\n');
   });
-
   stream.on('error', function(error) {
     console.log(error);
   });

@@ -21,8 +21,8 @@ ioSocket.on("before_mentions", function (mentions) {
   }
 });
 
-ioSocket.on("mention_come", function (mention) {
-  prependMessage(mention, $('#mentionView'));
+ioSocket.on("mention_come", function (data) {
+  prependMessage(data.tweet_status, $('#mentionView'));
 });
 
 ioSocket.on("twitter_message", function(data) {
@@ -46,11 +46,10 @@ function favorite(tweet_id){
 function imageView(tweet_status){
   let img_tag = '';
   if('extended_entities' in tweet_status && 'media' in tweet_status.extended_entities){
-    let media_list = tweet_status.extended_entities.media;
-    for(let j = 1; j < media_list.length; j++) {
-      if(media_list[j].type === "photo"){
-        img_tag += '<a href="'+ media_list[j].media_url +
-            '"><img src="' + media_list[j].media_url + '" class="user-photo"></a>'
+    for(let media in tweet_status.extended_entities.media) {
+      if(media.type === "photo"){
+        img_tag += '<a href="'+ media.media_url +
+            '"><img src="' + media.media_url + '" class="user-photo"></a>'
       }
       else if(media_list.media[j].type === "video"){
         return '';
