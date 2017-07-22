@@ -1,31 +1,27 @@
-let ioSocket = io.connect("http://localhost:3000");
+let ioSocket = io.connect("http://localhost:33000");
 
-let is_reply;
 
-ioSocket.on("connect", function() {
-  is_reply = false;
-  ioSocket.emit('connect_start');
-});
+ioSocket.on("connect", () => { ioSocket.emit('connect_start'); });
 
-ioSocket.on("disconnect", function() {});
+ioSocket.on("disconnect", () => {});
 
-ioSocket.on('before_timeline', function (status_list) {
-  for(let tweet_status of status_list){
+ioSocket.on('before_timeline', (status_list) => {
+  for(let tweet_status of status_list) {
     prependMessage(tweet_status, $('#messageView'));
   }
 });
 
-ioSocket.on("before_mentions", function (mentions) {
+ioSocket.on("before_mentions", (mentions) => {
   for(let mention of mentions){
     prependMessage(mention, $('#mentionView'));
   }
 });
 
-ioSocket.on("mention_come", function (data) {
+ioSocket.on("mention_come", (data) => {
   prependMessage(data.tweet_status, $('#mentionView'));
 });
 
-ioSocket.on("twitter_message", function(data) {
+ioSocket.on("twitter_message", (data) => {
   prependMessage(data.tweet_status, $('#messageView'));
 });
 
@@ -47,11 +43,11 @@ function imageView(tweet_status){
   let img_tag = '';
   if('extended_entities' in tweet_status && 'media' in tweet_status.extended_entities){
     for(let media in tweet_status.extended_entities.media) {
-      if(media.type === "photo"){
+      if(media.type === "photo") {
         img_tag += '<a href="'+ media.media_url +
-            '"><img src="' + media.media_url + '" class="user-photo"></a>'
+            '"><img src="' + media.media_url + '" class="user-photo"></a>';
       }
-      else if(media_list.media[j].type === "video"){
+      else if(media.type === "video"){
         return '';
       }
     }
